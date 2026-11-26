@@ -286,12 +286,12 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
   <section class="scene" id="s-money">
     <div class="main">
       <div>
-        <div class="kicker rv" style="color:var(--blue)">1万円寄付すると（2025年度の全国平均）</div>
-        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約5,210円</h2>
+        <div class="kicker rv" style="color:var(--blue)">1万円寄付すると</div>
+        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約4,930円</h2>
       </div>
       <svg id="sankey" class="rv d2" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet" aria-label="1万円の内訳"></svg>
     </div>
-    <div class="src">内訳は2025年度の全国平均（総務省 現況調査をもとにした大和総研レポート 2026年9月）。東松島市の受付窓口は一般社団法人 東松島みらいとし機構</div>
+    <div class="src">返礼品・送料など・サイト手数料は2025年度の全国平均（総務省 現況調査をもとにした大和総研レポート 2026年9月）。中間事業者への委託は寄付額の7%で計算。東松島市の受付窓口は一般社団法人 東松島みらいとし機構</div>
   </section>
 
   <section class="scene" id="s-sites">
@@ -453,7 +453,7 @@ function drawSankey(){const s=document.getElementById('sankey');s.innerHTML='';
   tx(mx0+30,top-14,'寄付',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#5b6170'});
   const t=tx(mx0+30,top+H/2,'10,000円',{'text-anchor':'middle',fill:'#fff','font-size':15,'font-weight':900,transform:`rotate(-90 ${mx0+30} ${top+H/2})`});
   // right: where it goes
-  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",570,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",1150,"#6f7686"],["その他の事務費","中間事業者への委託など",420,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",5210,"#2b6de0"]];
+  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",570,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",1150,"#6f7686"],["中間事業者への委託","業務を受託する事業者（寄付額の7%）",700,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",4930,"#2b6de0"]];
   const rx0=780,rx1=790,gap=12,usable=H-gap*(parts.length-1);let ys=top,yd=top;
   tx(rx0,top-14,'お金のゆくえ',{'font-size':13,'font-weight':900,fill:'#5b6170'});
   parts.forEach(([lab,who,v,col],i)=>{const hs=H*v/total,hd=usable*v/total;band(mx1,ys,hs,rx0,yd,hd,col,600+i*120);
