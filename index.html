@@ -73,10 +73,10 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
 .step span{font-size:12px;color:var(--sub);line-height:1.55;display:block;margin-top:4px}
 /* zukan */
 #s-zukan{flex-direction:column;gap:clamp(12px,2vh,22px)}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,16px)}
+.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(10px,1vw,14px) clamp(8px,.9vw,14px)}
 .card{min-width:0;display:flex;flex-direction:column;gap:6px}
-.card .img{aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:var(--soft)}
-.card .cat{font-size:11px;font-weight:900;letter-spacing:.14em;color:var(--red)}
+.card .img{aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--soft)}
+.card .cat{align-self:flex-start;font-size:clamp(12px,1vw,14px);font-weight:900;letter-spacing:.08em;color:#fff;background:var(--red);border-radius:999px;padding:3px 12px;margin-top:2px}
 .card b{font-size:clamp(13px,1.1vw,15px);font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card .meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--sub)}
 .card .meta em{font-style:normal;font-weight:900;color:var(--ink);white-space:nowrap}
@@ -85,10 +85,11 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
 .form{background:var(--soft);border-radius:12px;padding:10px 14px;min-width:0;font-size:12px;color:var(--sub);line-height:1.5}
 .form b{font-size:14px;color:var(--ink);font-weight:900;margin-right:8px}
 /* caution */
-#s-caution{flex-direction:column;gap:clamp(16px,2.6vh,28px)}
-.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.2vw,16px)}
-.warn{border:1px solid var(--line);border-radius:16px;padding:clamp(16px,1.6vw,22px);background:#fff;display:flex;flex-direction:column;gap:8px;min-width:0}
-.warn .ic{width:34px;height:34px;border-radius:10px;background:#fdeceb;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:16px}
+#s-caution{flex-direction:column;justify-content:center;gap:clamp(18px,3vh,32px)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,14px)}
+.warn{border:1px solid var(--line);border-radius:14px;padding:clamp(12px,1.2vw,18px);background:#fff;display:grid;grid-template-columns:30px 1fr;gap:4px 12px;align-items:start;min-width:0}
+.warn span{grid-column:2}
+.warn .ic{grid-row:span 2;width:30px;height:30px;border-radius:9px;background:#fdeceb;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:16px}
 .warn b{font-size:clamp(16px,1.5vw,21px);font-weight:900}
 .warn span{font-size:13px;color:var(--sub);line-height:1.65}
 /* cover */
@@ -126,7 +127,7 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
 .uses span{font-size:12px;border:1px solid #2b6de055;color:var(--blue);border-radius:999px;padding:4px 10px;font-weight:700;background:#fff}
 .hcards{flex:0 1 760px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.1vw,16px);min-width:0}
 .hcards .card .img{aspect-ratio:1;background:#fff;box-shadow:0 0 0 1px var(--line)}
-.hcards .card .cat{color:var(--blue)}
+.hcards .card .cat{background:var(--blue)}
 #jets{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 /* money */
 #s-money{align-items:center;gap:clamp(20px,3vw,48px)}
@@ -230,7 +231,7 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
   <section class="scene" id="s-zukan">
     <div>
       <div class="kicker rv">返礼品いろいろ</div>
-      <h2 class="h2 rv d1" style="margin-top:10px">いくらとほたてだけじゃない</h2>
+      <h2 class="h2 rv d1" style="margin-top:10px">いくらやホタテ、肉だけじゃない</h2>
     </div>
     <div class="cards" id="zcards"></div>
     <div class="forms rv d5">
@@ -254,6 +255,9 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
       <div class="warn rv d3"><div class="ic">!</div><b>サムネがプロの加工</b><span>盛り付け例やイメージ写真は届く状態と違う。「写真はイメージです」の表記を探す</span></div>
       <div class="warn rv d4"><div class="ic">!</div><b>タイトルに「総合1位」「高評価」</b><span>タイトルに宣伝文句が並ぶ。何のランキングか、いつの評価かは書かれていないことが多い</span></div>
       <div class="warn rv d4"><div class="ic">!</div><b>届くのが数か月後</b><span>米・冷凍品・定期便は発送まで数か月かかることがある。発送時期の欄を見る</span></div>
+      <div class="warn rv d5"><div class="ic">!</div><b>寄付額が「〜」表示</b><span>一覧の金額は一番少ない容量の額。「19,500円〜」のように、選ぶ量で寄付額が上がる</span></div>
+      <div class="warn rv d5"><div class="ic">!</div><b>「寄付額改定」の予告</b><span>「9月5日すぎに寄付額改定」のように、タイトルで値上げを予告して急がせる</span></div>
+      <div class="warn rv d6"><div class="ic">!</div><b>定期便は総額で見る</b><span>1回あたりは少なく見えても、漬け丼7回で86,000円。届く回数と総額を確認する</span></div>
     </div>
   </section>
 
@@ -278,7 +282,7 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
     <div class="main">
       <div>
         <div class="kicker rv" style="color:var(--blue)">東松島市に1万円寄付すると</div>
-        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約5,210円</h2>
+        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約52%</h2>
       </div>
       <svg id="sankey" class="rv d2" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet" aria-label="1万円の内訳"></svg>
     </div>
@@ -287,8 +291,8 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
 
   <section class="scene" id="s-sites">
     <div>
-      <div class="kicker rv">どこから寄付する？</div>
-      <h2 class="h2 rv d1" style="margin-top:10px">サイトごとのメリット</h2>
+      <div class="kicker rv">サイトごとのメリット</div>
+      <h2 class="h2 rv d1" style="margin-top:10px">どこから寄付する？</h2>
     </div>
     <div class="sites">
       <div class="site me rv d2"><div class="nm">楽天ふるさと納税</div><div class="cnt"><b class="num">1,737</b>自治体</div><ul><li>楽天会員ならアカウント作成なしで寄付できる</li><li>楽天ポイントで支払える。楽天カード払いはカードのポイントが付く</li><li>返礼品数・レビュー件数が最大級</li></ul></div>
@@ -374,16 +378,16 @@ const D = [[2026,"21205"],[2026,"21205"],[2026,"07204"],[2026,"07204"],[2026,"46
 [2020,"39307"],[2020,"12234"],[2020,"01223"],[2020,"01223"],[2020,"01609"],[2020,"01219"],[2018,"39302"],[2018,"12223"],
 [2017,"39302"],[2017,"01668"],[2017,"43364"],[2017,"22212"],[2016,"39202"],[2016,"22212"],[2016,"45406"],[2016,"01347"]];
 
-const Z=[["z_meat","肉","飛騨ジビエ 熊鍋セット","岐阜県高山市","30,000円"],["z_fish","魚介","鯨肉 お刺身用 鯨赤身","大阪府大阪市","12,000円"],["z_veg","野菜","紫アスパラガス 約1.5kg","香川県高松市","15,000円"],["z_rice","米","幻の米「あや」精米10kg","北海道旭川市","10,000円"],
- ["z_sake","酒","百年杉木桶仕込み 樽丸純米樽酒","奈良県吉野町","21,000円"],["z_gold","モノ","純金（K24）製 黄金将棋の駒【王将】","山梨県南アルプス市","11,740,000円",1],["z_exp","体験","イルカのトレーナー体験 1名","高知県室戸市","8,000円"],["z_svc","サービス","お墓参り代行サービス 1回","長野県原村","37,000円"]];
-document.getElementById('zcards').innerHTML=Z.map(([k,c,n,t,y,g],i)=>`<div class="card rv d${2+Math.floor(i/4)*2}${g?' gold':''}"><div class="img">${img(k,n)}</div><div class="cat">${c}</div><b>${n}</b><div class="meta"><span>${t}</span><em class="num">${y}</em></div></div>`).join('');
+const Z=[["z_meat","肉","飛騨ジビエ 熊鍋セット","岐阜県高山市","30,000円"],["z_fish","魚介","鯨肉 お刺身用 鯨赤身","大阪府大阪市","12,000円"],["z_veg","野菜","紫アスパラガス 約1.5kg","香川県高松市","15,000円"],["z_fruit","果物","ルビーロマン 600g","石川県金沢市","44,000円"],["z_rice","米","幻の米「あや」精米10kg","北海道旭川市","10,000円"],["z_sake","酒","百年杉木桶仕込み 樽丸純米樽酒","奈良県吉野町","21,000円"],
+ ["z_bousai","非常食","サタケ 7年保存ご飯 20食セット","広島県東広島市","35,000円"],["z_daily","日用品","トイレットペーパー プレミアムシンラ","静岡県富士市","9,500円〜"],["z_gold","モノ","純金（K24）製 黄金将棋の駒【王将】","山梨県南アルプス市","11,740,000円",1],["z_exp","体験","イルカのトレーナー体験 1名","高知県室戸市","8,000円"],["z_svc","サービス","お墓参り代行サービス 1回","長野県原村","37,000円"],["z_travel","旅行","楽天トラベルクーポン 15,000円分","福岡県福岡市","50,000円"]];
+document.getElementById('zcards').innerHTML=Z.map(([k,c,n,t,y,g],i)=>`<div class="card rv d${2+Math.floor(i/6)*2}${g?' gold':''}"><div class="img">${img(k,n)}</div><div class="cat">${c}</div><b>${n}</b><div class="meta"><span>${t}</span><em class="num">${y}</em></div></div>`).join('');
 const HC=[["h_tan","牛たん","厚切り牛タン 12mm","8,000円〜"],["h_ponzu","調味料","長寿味噌醤油 ぽん酢など4種","13,000円"],["h_nori","海苔","奥松島 焼きのり・味付けのり（皇室献上）","29,000円"],["h_kaki","牡蠣","奥松島産 むき身 1kg","14,000円"],["h_rice","米","ササニシキ（デンマーク王室献上米）","9,000円〜"],["h_blue","ブルーインパルス","縁細工 ブルーインパルス 3点セット","10,000円"]];
 document.getElementById('hcards').innerHTML=HC.map(([k,c,n,y],i)=>`<div class="card rv d${2+Math.floor(i/3)}"><div class="img">${img(k,n)}</div><div class="cat">${c}</div><b>${n}</b><div class="meta"><span></span><em class="num">${y}</em></div></div>`).join('');
 
 const RANKS = [
  {p:5,code:"39202",town:"高知県室戸市",name:"初音の定期便お楽しみセット（12回）",yen:"120,000円",
   pts:["毎月1回、12か月届く定期便","おひとり様向けの2人前","肉・魚・惣菜・刺身・加工品が冷凍で届く"],
-  alt:"2017年に寄付した高知県奈半利町の「お楽しみコース（年12回）」は掲載終了のため、今ある近い定期便に差し替え"},
+  alt:""},
  {p:4,code:"34213",town:"広島県廿日市市",name:"桜尾・戸河内 ウイスキー2本セット（各700ml）",yen:"60,000円",
   pts:["廿日市市桜尾の蒸留所、サクラオブルワリーアンドディスティラリーがつくるウイスキー","「桜尾」と「戸河内」の2本セット","決済から2週間程度で発送。常温で保存できる"],alt:""},
  {p:3,code:"28585",town:"兵庫県香美町",name:"香住産 ほたるいか素干し（訳あり）",yen:"3,000円〜",
@@ -471,7 +475,7 @@ const scenes=[...document.querySelectorAll('.scene')];
 const allTowns=[...new Set(D.map(d=>d[1]))];
 let tT=[];
 const H={
- 's-title':{cam:FULL,enter(){clearPins();litMuni([]);tT.forEach(clearTimeout);tT=[];[2016,2017,2018,2020,2021,2022,2024,2025,2026].forEach((y,i)=>tT.push(setTimeout(()=>D.filter(d=>d[0]===y).forEach((d,j)=>addPin(d[1],{delay:j*50})),400+i*450)));}},
+ 's-title':{cam:FULL,enter(){clearPins();litMuni([]);tT.forEach(clearTimeout);tT=[];[2016,2017,2018,2020,2021,2022,2024,2025,2026].forEach((y,i)=>tT.push(setTimeout(()=>D.filter(d=>d[0]===y).forEach((d,j)=>addPin(d[1],{delay:j*50})),400+i*450)));},leave(){tT.forEach(clearTimeout);}},
  's-system':{dim:1,cam:FULL,enter(){clearPins();litMuni([]);}},
  's-zukan':{dim:1,cam:FULL,enter(){clearPins();}},
  's-caution':{dim:1,cam:FULL,enter(){clearPins();}},
