@@ -453,7 +453,7 @@ function drawSankey(){const s=document.getElementById('sankey');s.innerHTML='';
   tx(mx0+30,top-14,'寄付',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#5b6170'});
   const t=tx(mx0+30,top+H/2,'10,000円',{'text-anchor':'middle',fill:'#fff','font-size':15,'font-weight':900,transform:`rotate(-90 ${mx0+30} ${top+H/2})`});
   // right: where it goes
-  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",570,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",1150,"#6f7686"],["中間事業者への委託","業務を受託する事業者（寄付額の7%）",700,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",4930,"#2b6de0"]];
+  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",570,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",1150,"#6f7686"],["中間事業者への委託","寄付額の7%",700,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",4930,"#2b6de0"]];
   const rx0=780,rx1=790,gap=12,usable=H-gap*(parts.length-1);let ys=top,yd=top;
   tx(rx0,top-14,'お金のゆくえ',{'font-size':13,'font-weight':900,fill:'#5b6170'});
   parts.forEach(([lab,who,v,col],i)=>{const hs=H*v/total,hd=usable*v/total;band(mx1,ys,hs,rx0,yd,hd,col,600+i*120);
