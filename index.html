@@ -220,14 +220,14 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
     <div class="trio">
       <div class="box rv d2"><div class="no">01</div><div class="name">好きな自治体に寄付する</div><div class="note">サイトで返礼品を選んでカード払い。12月31日までの寄付がその年の分</div><div class="yen num">10,000<small>円</small></div></div>
       <div class="box rv d3"><div class="no">02</div><div class="name">返礼品が届く</div><div class="note">返礼品の調達費は寄付額の30%まで</div><div class="yen num">約3,000<small>円分</small></div></div>
-      <div class="box rv d4"><div class="no">03</div><div class="name">税金が減る</div><div class="note">寄付額から2,000円を引いた分が、所得税と翌年の住民税から差し引かれる</div><div class="yen num">8,000<small>円</small></div></div>
+      <div class="box rv d4"><div class="no">03</div><div class="name">税金が減る</div><div class="note">寄付額から2,000円を引いた分が、所得税と翌年の住民税から差し引かれる。2,000円は1年間の合計で、何件寄付しても同じ</div><div class="yen num">8,000<small>円</small></div></div>
     </div>
     <div class="limit rv d5"><b>税金が減るのは上限まで</b><span>上限は年収と家族構成で決まる。楽天やさとふるなど各サイトのシミュレーターに年収と家族構成を入れると計算できる。上限を超えた分は自己負担になる</span></div>
     <div class="steps rv d6">
       <div class="step"><b>上限を調べる</b><span>サイトのシミュレーターに年収と家族構成を入れて計算</span></div>
       <div class="step"><b>寄付する</b><span>楽天・Amazonなどのサイトで返礼品を選んで支払う</span></div>
       <div class="step"><b>返礼品と証明書が届く</b><span>寄附金受領証明書は保管する</span></div>
-      <div class="step"><b>申請する</b><span>5自治体までならワンストップ特例。6自治体以上は確定申告</span></div>
+      <div class="step"><b>申請する</b><span>5自治体までならワンストップ特例。6自治体以上や、医療費控除などで確定申告する人は確定申告で</span></div>
       <div class="step"><b>税金が減る</b><span>翌年度の住民税が少なくなる</span></div>
     </div>
   </section>
@@ -286,8 +286,8 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
   <section class="scene" id="s-money">
     <div class="main">
       <div>
-        <div class="kicker rv" style="color:var(--blue)">東松島市に1万円寄付すると</div>
-        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約52%</h2>
+        <div class="kicker rv" style="color:var(--blue)">1万円寄付すると（2025年度の全国平均）</div>
+        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約5,210円</h2>
       </div>
       <svg id="sankey" class="rv d2" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet" aria-label="1万円の内訳"></svg>
     </div>
@@ -453,7 +453,7 @@ function drawSankey(){const s=document.getElementById('sankey');s.innerHTML='';
   tx(mx0+30,top-14,'寄付',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#5b6170'});
   const t=tx(mx0+30,top+H/2,'10,000円',{'text-anchor':'middle',fill:'#fff','font-size':15,'font-weight':900,transform:`rotate(-90 ${mx0+30} ${top+H/2})`});
   // right: where it goes
-  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",780,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",940,"#6f7686"],["その他の事務費","中間事業者への委託など",420,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",5210,"#2b6de0"]];
+  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",570,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",1150,"#6f7686"],["その他の事務費","中間事業者への委託など",420,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",5210,"#2b6de0"]];
   const rx0=780,rx1=790,gap=12,usable=H-gap*(parts.length-1);let ys=top,yd=top;
   tx(rx0,top-14,'お金のゆくえ',{'font-size':13,'font-weight':900,fill:'#5b6170'});
   parts.forEach(([lab,who,v,col],i)=>{const hs=H*v/total,hd=usable*v/total;band(mx1,ys,hs,rx0,yd,hd,col,600+i*120);
