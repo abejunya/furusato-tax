@@ -66,6 +66,9 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
 .eq .t b{display:block;font-size:clamp(22px,2.4vw,36px);color:var(--ink);font-weight:900}
 .eq .op{font-size:clamp(22px,2.4vw,36px);font-weight:300;color:var(--faint)}
 .eq .t.res b{color:var(--red)}
+.limit{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;border-left:4px solid var(--red);background:var(--soft);border-radius:0 12px 12px 0;padding:14px 20px}
+.limit b{font-size:clamp(17px,1.6vw,22px);font-weight:900;color:var(--red);white-space:nowrap}
+.limit span{font-size:clamp(13px,1.15vw,15px);color:var(--sub);line-height:1.6;flex:1;min-width:240px}
 .steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:st}
 .step{border-top:1px solid var(--line);padding:12px 14px 0 0;position:relative;min-width:0}
 .step::before{counter-increment:st;content:counter(st);position:absolute;top:-11px;left:0;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
@@ -81,7 +84,7 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
 .card .meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--sub)}
 .card .meta em{font-style:normal;font-weight:900;color:var(--ink);white-space:nowrap}
 .card.gold .meta em{color:var(--red)}
-.forms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,16px)}
+.forms{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.1vw,16px)}
 .form{background:var(--soft);border-radius:12px;padding:10px 14px;min-width:0;font-size:12px;color:var(--sub);line-height:1.5}
 .form b{font-size:14px;color:var(--ink);font-weight:900;margin-right:8px}
 /* caution */
@@ -219,8 +222,9 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
       <div class="box rv d3"><div class="no">02</div><div class="name">返礼品が届く</div><div class="note">返礼品の調達費は寄付額の30%まで</div><div class="yen num">約3,000<small>円分</small></div></div>
       <div class="box rv d4"><div class="no">03</div><div class="name">税金が減る</div><div class="note">寄付額から2,000円を引いた分が、所得税と翌年の住民税から差し引かれる</div><div class="yen num">8,000<small>円</small></div></div>
     </div>
+    <div class="limit rv d5"><b>税金が減るのは上限まで</b><span>上限は年収と家族構成で決まる。楽天やさとふるなど各サイトのシミュレーターに年収と家族構成を入れると計算できる。上限を超えた分は自己負担になる</span></div>
     <div class="steps rv d6">
-      <div class="step"><b>上限を調べる</b><span>差し引ける額には年収と家族構成で決まる上限がある</span></div>
+      <div class="step"><b>上限を調べる</b><span>サイトのシミュレーターに年収と家族構成を入れて計算</span></div>
       <div class="step"><b>寄付する</b><span>楽天・Amazonなどのサイトで返礼品を選んで支払う</span></div>
       <div class="step"><b>返礼品と証明書が届く</b><span>寄附金受領証明書は保管する</span></div>
       <div class="step"><b>申請する</b><span>5自治体までならワンストップ特例。6自治体以上は確定申告</span></div>
@@ -237,7 +241,8 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
     <div class="forms rv d5">
       <div class="form"><b>単品</b>1回届く</div>
       <div class="form"><b>定期便</b>毎月などに分けて届く</div>
-      <div class="form"><b>訳あり</b>不揃い・規格外で量が多い</div>
+      <div class="form"><b>後から選べる</b>寄付してから選ぶ</div>
+      <div class="form"><b>クラウドファンディング</b>使い道の事業を選ぶ</div>
       <div class="form"><b>返礼品なし</b>寄付だけ。災害時の代理寄付も</div>
     </div>
     <div class="src">寄付額は2026年11月時点の楽天ふるさと納税の表示。写真は各返礼品ページより</div>
@@ -355,7 +360,7 @@ h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
     <div class="stack">
       <div class="band">次回 節税シリーズ 第2弾</div>
       <div class="mega pop" style="font-size:clamp(48px,8vw,136px)">401kで<span>固めて</span>、<br>NISAで<span>攻める</span></div>
-      <div class="catch pop p2" style="font-size:clamp(20px,2.6vw,40px);margin-top:10px">守りの401k × 攻めのNISA × 子どもはこどもNISA</div>
+      <div class="catch pop p2" style="font-size:clamp(20px,2.6vw,40px);margin-top:10px">守りの401k × 攻めのNISA</div>
       <div class="sub pop p3">老後と教育費、税金をかけずに準備する</div>
       <div class="otanoshimi pop p4">お楽しみに！</div>
     </div>
@@ -392,8 +397,8 @@ const RANKS = [
   pts:["廿日市市桜尾の蒸留所、サクラオブルワリーアンドディスティラリーがつくるウイスキー","「桜尾」と「戸河内」の2本セット","決済から2週間程度で発送。常温で保存できる"],alt:""},
  {p:3,code:"28585",town:"兵庫県香美町",name:"香住産 ほたるいか素干し（訳あり）",yen:"3,000円〜",
   pts:["香美町の漁港で水揚げしたほたるいかを100%使用","食塩・添加物なし。ワタごと丸干し","トースターやライターで炙ると風味が増す"],alt:""},
- {p:2,code:"27213",town:"大阪府泉佐野市",name:"ビッグフェイスタオル ヒオリエ",yen:"14,000円〜",
-  pts:["約40×100cm。バスタオルよりコンパクトで洗濯がラク","綿100%、泉佐野市で製造する泉州タオル","5枚・10枚から選べる"],alt:""},
+ {p:2,code:"38202",town:"愛媛県今治市",name:"上質今治タオル ビッグフェイスタオル 同色4枚セット",yen:"17,000円",
+  pts:["ふるさと納税限定の今治タオル。今治タオルブランドの認定品","村上パイルと共同開発。ふわふわで毛羽が少なく、吸水性が高い","約40×100cm×4枚、綿100%。発送は入金確認後90日程度"],alt:""},
  {p:1,code:"01223",town:"北海道根室市",name:"[北海道根室産] いくら醤油漬・お刺身帆立貝柱セット",yen:"16,000円〜",
   pts:["根室の藤井水産（創業1902年）","いくら醤油漬とお刺身用の帆立貝柱のセット","内容量を3種類から選べる"],alt:""}
 ];
