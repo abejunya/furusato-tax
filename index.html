@@ -1,0 +1,503 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}img{max-width:100%}</style></head><body><title>ふるさと納税 私的ランキング</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: white full-screen stage; a pale map of Japan is the camera behind the pages. Text left, evidence right. One red accent, blue for the hometown, black for the trailer pages. */
+:root{
+  color-scheme: light;
+  --bg:#ffffff;
+  --ink:#14161a;
+  --sub:#5b6170;
+  --faint:#9aa0ab;
+  --line:#e6e8ec;
+  --soft:#f5f6f8;
+  --land:#eef0f3;
+  --land-hi:#e2e6ec;
+  --red:#e0362c;
+  --blue:#2b6de0;
+  --f:"Lato","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);overflow:hidden;margin:0;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));box-sizing:border-box}
+*{box-sizing:border-box}
+#stage{position:fixed;inset:0;overflow:hidden;background:var(--bg);transition:background .6s}
+#stage.dark{background:#0c0c0e}
+#map{position:absolute;inset:0;width:100%;height:100%;transition:opacity .8s}
+#map .pref{fill:var(--land);stroke:#fff;stroke-width:1;vector-effect:non-scaling-stroke}
+#map .pref.lit{fill:var(--land-hi)}
+#map .muni{fill:var(--red);opacity:0;transition:opacity .8s}
+#map .muni.on{opacity:.85}
+#map .muni.home{fill:var(--blue)}
+.dim #map{opacity:.3}
+.dark #map{opacity:0}
+.scene{position:absolute;inset:0;padding:clamp(44px,7.5vh,84px) max(28px,6vw) clamp(44px,7.5vh,76px);display:flex;opacity:0;visibility:hidden;transition:opacity .5s, visibility 0s .5s}
+.scene.active{opacity:1;visibility:visible;transition:opacity .6s .1s}
+.kicker{font-size:clamp(11px,1vw,13px);font-weight:700;letter-spacing:.2em;color:var(--red);text-transform:uppercase}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance;font-weight:900;letter-spacing:-.01em}
+.h2{font-size:clamp(26px,3.2vw,46px);line-height:1.25}
+.num{font-variant-numeric:tabular-nums}
+.src{position:absolute;left:max(28px,6vw);bottom:20px;font-size:11px;color:var(--faint);max-width:72vw}
+.rv{opacity:0;transform:translateY(12px);transition:opacity .6s, transform .6s cubic-bezier(.2,.8,.2,1)}
+.active .rv{opacity:1;transform:none}
+.active .d1{transition-delay:.15s}.active .d2{transition-delay:.3s}.active .d3{transition-delay:.45s}.active .d4{transition-delay:.6s}.active .d5{transition-delay:.75s}.active .d6{transition-delay:.9s}
+#pageno{position:fixed;right:max(24px, env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--faint);z-index:20;letter-spacing:.08em}
+#navzones{position:fixed;inset:0;z-index:5;display:flex}
+#navzones div{flex:1}
+.ph{background:var(--soft);display:block;width:100%;height:100%;object-fit:cover}
+/* title */
+#s-title{align-items:flex-end}
+#s-title h1{font-size:clamp(48px,8vw,128px);line-height:1.06;letter-spacing:-.02em}
+#s-title h1 span{color:var(--red)}
+#s-title .yr{margin-top:18px;font-size:clamp(14px,1.3vw,18px);color:var(--sub);font-weight:700;letter-spacing:.1em}
+/* system */
+#s-system{flex-direction:column;justify-content:center;gap:clamp(20px,4vh,40px)}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.4vw,20px);align-items:stretch}
+.box{border:1px solid var(--line);border-radius:16px;padding:clamp(16px,1.8vw,24px);background:#fff;display:flex;flex-direction:column;gap:6px;min-width:0}
+.box .no{font-size:12px;font-weight:900;color:var(--red);letter-spacing:.1em}
+.box .name{font-size:clamp(17px,1.7vw,24px);font-weight:900}
+.box .yen{font-size:clamp(30px,3.4vw,52px);font-weight:900;line-height:1.1;margin-top:auto}
+.box .yen small{font-size:.42em;font-weight:700;margin-left:2px}
+.box .note{font-size:13px;color:var(--sub);line-height:1.6}
+.eq{display:flex;align-items:center;gap:clamp(10px,1.4vw,22px);flex-wrap:wrap;background:var(--soft);border-radius:16px;padding:clamp(14px,1.6vw,22px) clamp(16px,2vw,28px)}
+.eq .t{font-size:clamp(14px,1.3vw,18px);color:var(--sub)}
+.eq .t b{display:block;font-size:clamp(22px,2.4vw,36px);color:var(--ink);font-weight:900}
+.eq .op{font-size:clamp(22px,2.4vw,36px);font-weight:300;color:var(--faint)}
+.eq .t.res b{color:var(--red)}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:st}
+.step{border-top:1px solid var(--line);padding:12px 14px 0 0;position:relative;min-width:0}
+.step::before{counter-increment:st;content:counter(st);position:absolute;top:-11px;left:0;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
+.step b{display:block;font-size:clamp(13px,1.15vw,15px);margin-top:10px}
+.step span{font-size:12px;color:var(--sub);line-height:1.55;display:block;margin-top:4px}
+/* zukan */
+#s-zukan{flex-direction:column;gap:clamp(12px,2vh,22px)}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,16px)}
+.card{min-width:0;display:flex;flex-direction:column;gap:6px}
+.card .img{aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:var(--soft)}
+.card .cat{font-size:11px;font-weight:900;letter-spacing:.14em;color:var(--red)}
+.card b{font-size:clamp(13px,1.1vw,15px);font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--sub)}
+.card .meta em{font-style:normal;font-weight:900;color:var(--ink);white-space:nowrap}
+.card.gold .meta em{color:var(--red)}
+.forms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,16px)}
+.form{background:var(--soft);border-radius:12px;padding:10px 14px;min-width:0;font-size:12px;color:var(--sub);line-height:1.5}
+.form b{font-size:14px;color:var(--ink);font-weight:900;margin-right:8px}
+/* caution */
+#s-caution{flex-direction:column;gap:clamp(16px,2.6vh,28px)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.2vw,16px)}
+.warn{border:1px solid var(--line);border-radius:16px;padding:clamp(16px,1.6vw,22px);background:#fff;display:flex;flex-direction:column;gap:8px;min-width:0}
+.warn .ic{width:34px;height:34px;border-radius:10px;background:#fdeceb;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:16px}
+.warn b{font-size:clamp(16px,1.5vw,21px);font-weight:900}
+.warn span{font-size:13px;color:var(--sub);line-height:1.65}
+/* cover */
+#s-cover{flex-direction:column;justify-content:center}
+#s-cover .big{font-size:clamp(100px,18vw,280px);font-weight:900;line-height:.9;letter-spacing:-.04em}
+#s-cover .big span{color:var(--red)}
+/* rank */
+.rank{align-items:center;justify-content:space-between;gap:clamp(20px,4vw,64px)}
+.rank .left{display:flex;flex-direction:column;gap:14px;flex:0 1 520px;min-width:0}
+.rank .place{display:flex;align-items:baseline;gap:6px}
+.rank .place b{font-size:clamp(84px,12vw,180px);font-weight:900;line-height:.85;letter-spacing:-.04em}
+.rank .place span{font-size:clamp(20px,2.2vw,32px);font-weight:900}
+.rank .town{font-size:clamp(13px,1.2vw,15px);color:var(--sub);font-weight:700;letter-spacing:.06em}
+.rank h3{font-size:clamp(22px,2.6vw,38px);line-height:1.3}
+.rank .yen{font-size:clamp(13px,1.1vw,15px);color:var(--sub)}
+.rank .yen b{font-size:clamp(22px,2.2vw,32px);color:var(--ink);font-weight:900;margin-right:4px}
+.points{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:8px}
+.points li{display:grid;grid-template-columns:16px 1fr;gap:8px;font-size:clamp(13px,1.2vw,16px);line-height:1.6}
+.points li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red);margin-top:.65em}
+.alt{border-left:3px solid var(--red);padding:8px 0 8px 14px;font-size:13px;color:var(--sub);line-height:1.6}
+.alt b{color:var(--ink)}
+.rank.first .place b{color:var(--red)}
+.photo{flex:0 1 min(40vw,560px);aspect-ratio:1;min-width:0;max-width:100%;border-radius:20px;overflow:hidden;background:var(--soft);box-shadow:0 30px 70px -28px #14161a55;transform:translateY(18px) scale(.97);opacity:0;transition:transform 1s cubic-bezier(.2,.8,.2,1) .3s,opacity .6s .3s;position:relative}
+.active .photo{transform:none;opacity:1}
+.photo .tag{position:absolute;left:14px;bottom:14px;background:#fff;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--sub);box-shadow:0 4px 14px #0002}
+#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+/* home */
+#s-home{align-items:center;justify-content:space-between;gap:clamp(20px,3vw,48px)}
+#s-home .left{flex:0 1 420px;display:flex;flex-direction:column;gap:14px;min-width:0}
+#s-home h2{font-size:clamp(40px,5.6vw,88px);line-height:1.05}
+#s-home h2 span{color:var(--blue)}
+#s-home .kicker{color:var(--blue)}
+#s-home p{font-size:clamp(14px,1.25vw,17px);color:var(--sub);line-height:1.7}
+.uses{display:flex;gap:6px;flex-wrap:wrap}
+.uses span{font-size:12px;border:1px solid #2b6de055;color:var(--blue);border-radius:999px;padding:4px 10px;font-weight:700;background:#fff}
+.hcards{flex:0 1 760px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.1vw,16px);min-width:0}
+.hcards .card .img{aspect-ratio:1;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.hcards .card .cat{color:var(--blue)}
+#jets{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+/* money */
+#s-money{align-items:center;gap:clamp(20px,3vw,48px)}
+#s-money .main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:clamp(14px,2.4vh,24px)}
+#sankey{width:100%;height:auto;max-height:58vh;display:block}
+.side{flex:0 0 min(300px,30vw);display:flex;flex-direction:column;gap:12px;min-width:0}
+.fut{background:var(--soft);border-radius:14px;padding:16px 18px;min-width:0}
+.fut .when{font-size:12px;font-weight:900;color:var(--red);letter-spacing:.06em}
+.fut .what{font-size:clamp(13px,1.1vw,15px);line-height:1.65;margin-top:6px}
+.fut .what b{font-weight:900;font-size:1.15em}
+/* sites */
+#s-sites{flex-direction:column;gap:clamp(14px,2.2vh,22px)}
+.sites{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.1vw,16px)}
+.site{border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0;background:#fff}
+.site .nm{font-size:clamp(15px,1.4vw,19px);font-weight:900;line-height:1.3;min-height:2.6em}
+.site .cnt{font-size:12px;color:var(--sub)}
+.site .cnt b{font-size:clamp(22px,2.2vw,30px);color:var(--ink);font-weight:900;margin-right:4px}
+.site ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.site li{font-size:13px;line-height:1.55;display:grid;grid-template-columns:14px 1fr;gap:6px}
+.site li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);margin-top:.6em}
+.site.me{border-color:var(--red)}
+/* close */
+#s-close{flex-direction:column;justify-content:center;gap:clamp(18px,3vh,30px)}
+#s-close h2{font-size:clamp(34px,4.6vw,70px);line-height:1.15}
+#s-close h2 span{color:var(--red)}
+.tl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;position:relative}
+.tl::before{content:"";position:absolute;left:0;right:0;top:9px;height:2px;background:var(--line)}
+.tlx{position:relative;padding-top:30px;padding-right:18px;min-width:0}
+.tlx::before{content:"";position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
+.tlx.hot::before{border-color:var(--red);background:var(--red)}
+.tlx .d{font-size:clamp(22px,2.4vw,36px);font-weight:900}
+.tlx.hot .d{color:var(--red)}
+.tlx .w{font-size:clamp(13px,1.15vw,15px);font-weight:700;margin-top:4px}
+.tlx .s{font-size:12px;color:var(--sub);line-height:1.55;margin-top:4px}
+/* trailer */
+.trailer{color:#fff;align-items:center;justify-content:center;flex-direction:column;text-align:center;overflow:hidden}
+.speed{position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 50%, #ffffff10 0deg 2deg, transparent 2deg 9deg);animation:spin 30s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.trailer .yokoku{font-size:clamp(90px,17vw,270px);font-weight:900;line-height:1;letter-spacing:-.02em;transform:skewX(-8deg) scale(1.6);opacity:0;color:#fff;text-shadow:8px 8px 0 var(--red)}
+.trailer.active .yokoku{animation:slam .5s cubic-bezier(.3,1.6,.5,1) .15s forwards}
+@keyframes slam{to{transform:skewX(-8deg) scale(1);opacity:1}}
+.trailer .band{background:var(--red);color:#fff;font-weight:900;padding:8px 22px;font-size:clamp(14px,1.6vw,22px);letter-spacing:.2em;transform:skewX(-8deg) translateX(-120vw);display:inline-block}
+.trailer.active .band{animation:band .6s cubic-bezier(.2,.8,.2,1) .6s forwards}
+@keyframes band{to{transform:skewX(-8deg) translateX(0)}}
+.trailer .sub{margin-top:22px;font-size:clamp(14px,1.4vw,20px);color:#ffffffb0;letter-spacing:.3em;font-weight:700}
+.trailer .mega{font-size:clamp(56px,9.5vw,160px);font-weight:900;line-height:1.02;letter-spacing:-.02em;transform:skewX(-8deg)}
+.trailer .mega span{color:var(--red)}
+.trailer .stack{display:flex;flex-direction:column;align-items:center;gap:16px;position:relative}
+.trailer .pop{opacity:0;transform:skewX(-8deg) scale(.6)}
+.trailer.active .pop{animation:pop .45s cubic-bezier(.3,1.6,.5,1) forwards}
+.trailer.active .pop.p2{animation-delay:.45s}.trailer.active .pop.p3{animation-delay:.9s}.trailer.active .pop.p4{animation-delay:1.35s}
+@keyframes pop{to{opacity:1;transform:skewX(-8deg) scale(1)}}
+.facts4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:10px;width:min(980px,100%)}
+.facts4 div{border:1px solid #ffffff30;border-radius:12px;padding:12px;transform:skewX(-8deg)}
+.facts4 b{display:block;font-size:clamp(22px,2.4vw,36px);font-weight:900}
+.facts4 span{font-size:12px;color:#ffffffa8}
+.catch{font-size:clamp(28px,4vw,62px);font-weight:900;transform:skewX(-8deg);line-height:1.2}
+.catch .r{color:var(--red)}
+.otanoshimi{margin-top:18px;font-size:clamp(18px,2.2vw,32px);font-weight:900;letter-spacing:.3em}
+@media (max-width:860px){
+  .scene{overflow:auto}
+  .trio,.grid3,.cards,.sites,.facts4,.forms,.steps,.tl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rank,#s-home,#s-money{flex-direction:column;align-items:stretch;justify-content:flex-start}
+  .photo{flex-basis:auto}.side{flex-basis:auto}.hcards{flex-basis:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}.trailer .yokoku,.trailer .pop{opacity:1;transform:none}.trailer .band{transform:none}}
+</style>
+
+<div id="stage">
+  <svg id="map" viewBox="0 0 870 780" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g id="g-pref"></g><g id="g-muni"></g><g id="g-pins"></g>
+  </svg>
+  <svg id="jets" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+  <canvas id="confetti"></canvas>
+
+  <section class="scene" id="s-title">
+    <div>
+      <h1 class="rv">ふるさと納税<br><span>私的</span>ランキング</h1>
+    </div>
+  </section>
+
+  <section class="scene" id="s-system">
+    <div>
+      <div class="kicker rv">しくみ</div>
+      <h2 class="h2 rv d1" style="margin-top:10px">2,000円の負担で、返礼品がもらえて税金も減る</h2>
+    </div>
+    <div class="trio">
+      <div class="box rv d2"><div class="no">01</div><div class="name">好きな自治体に寄付する</div><div class="note">サイトで返礼品を選んでカード払い。12月31日までの寄付がその年の分</div><div class="yen num">10,000<small>円</small></div></div>
+      <div class="box rv d3"><div class="no">02</div><div class="name">返礼品が届く</div><div class="note">返礼品の調達費は寄付額の30%まで</div><div class="yen num">約3,000<small>円分</small></div></div>
+      <div class="box rv d4"><div class="no">03</div><div class="name">税金が減る</div><div class="note">寄付額から2,000円を引いた分が、所得税と翌年の住民税から差し引かれる</div><div class="yen num">8,000<small>円</small></div></div>
+    </div>
+    <div class="steps rv d6">
+      <div class="step"><b>上限を調べる</b><span>差し引ける額には年収と家族構成で決まる上限がある</span></div>
+      <div class="step"><b>寄付する</b><span>楽天・Amazonなどのサイトで返礼品を選んで支払う</span></div>
+      <div class="step"><b>返礼品と証明書が届く</b><span>寄附金受領証明書は保管する</span></div>
+      <div class="step"><b>申請する</b><span>5自治体までならワンストップ特例。6自治体以上は確定申告</span></div>
+      <div class="step"><b>税金が減る</b><span>翌年度の住民税が少なくなる</span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-zukan">
+    <div>
+      <div class="kicker rv">返礼品いろいろ</div>
+      <h2 class="h2 rv d1" style="margin-top:10px">いくらとほたてだけじゃない</h2>
+    </div>
+    <div class="cards" id="zcards"></div>
+    <div class="forms rv d5">
+      <div class="form"><b>単品</b>1回届く</div>
+      <div class="form"><b>定期便</b>毎月などに分けて届く</div>
+      <div class="form"><b>訳あり</b>不揃い・規格外で量が多い</div>
+      <div class="form"><b>返礼品なし</b>寄付だけ。災害時の代理寄付も</div>
+    </div>
+    <div class="src">寄付額は2026年11月時点の楽天ふるさと納税の表示。写真は各返礼品ページより</div>
+  </section>
+
+  <section class="scene" id="s-caution">
+    <div>
+      <div class="kicker rv">選ぶときに</div>
+      <h2 class="h2 rv d1" style="margin-top:10px">こんな返礼品は注意</h2>
+    </div>
+    <div class="grid3">
+      <div class="warn rv d2"><div class="ic">!</div><b>サムネに芸能人</b><span>写真に写っているのは返礼品ではなく人。中身と量は説明文で確認する</span></div>
+      <div class="warn rv d2"><div class="ic">!</div><b>「訳あり」</b><span>不揃い・規格外・くっつきがある。理由は商品ページの「訳ありの理由」に書いてある</span></div>
+      <div class="warn rv d3"><div class="ic">!</div><b>やたら量が多い</b><span>1kg、3kgの冷凍品は冷凍庫に入りきらない。小分けかどうかも見る</span></div>
+      <div class="warn rv d3"><div class="ic">!</div><b>サムネがプロの加工</b><span>盛り付け例やイメージ写真は届く状態と違う。「写真はイメージです」の表記を探す</span></div>
+      <div class="warn rv d4"><div class="ic">!</div><b>タイトルに「総合1位」「高評価」</b><span>タイトルに宣伝文句が並ぶ。何のランキングか、いつの評価かは書かれていないことが多い</span></div>
+      <div class="warn rv d4"><div class="ic">!</div><b>届くのが数か月後</b><span>米・冷凍品・定期便は発送まで数か月かかることがある。発送時期の欄を見る</span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-cover">
+    <div class="kicker rv">Ranking</div>
+    <div class="big rv d1" style="margin-top:12px">TOP<span>5</span></div>
+  </section>
+
+  <div id="rankHost"></div>
+
+  <section class="scene" id="s-home">
+    <div class="left">
+      <div class="kicker rv">Special · 地元</div>
+      <h2 class="rv d1">宮城県<br><span>東松島市</span></h2>
+      <p class="rv d2">ブルーインパルスのまち。航空自衛隊 松島基地がある。寄付の使い道は5つの事業から選べる。</p>
+      <div class="uses rv d3"><span>福祉</span><span>子育て</span><span>防災</span><span>自然環境</span><span>産業</span></div>
+    </div>
+    <div class="hcards" id="hcards"></div>
+  </section>
+
+  <section class="scene" id="s-money">
+    <div class="main">
+      <div>
+        <div class="kicker rv" style="color:var(--blue)">東松島市に1万円寄付すると</div>
+        <h2 class="h2 rv d1" style="margin-top:10px">自治体に残るのは約5,210円</h2>
+      </div>
+      <svg id="sankey" class="rv d2" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet" aria-label="1万円の内訳"></svg>
+    </div>
+    <div class="src">内訳は2025年度の全国平均（総務省 現況調査をもとにした大和総研レポート 2026年9月）。東松島市の受付窓口は一般社団法人 東松島みらいとし機構</div>
+  </section>
+
+  <section class="scene" id="s-sites">
+    <div>
+      <div class="kicker rv">どこから寄付する？</div>
+      <h2 class="h2 rv d1" style="margin-top:10px">サイトごとのメリット</h2>
+    </div>
+    <div class="sites">
+      <div class="site me rv d2"><div class="nm">楽天ふるさと納税</div><div class="cnt"><b class="num">1,737</b>自治体</div><ul><li>楽天会員ならアカウント作成なしで寄付できる</li><li>楽天ポイントで支払える。楽天カード払いはカードのポイントが付く</li><li>返礼品数・レビュー件数が最大級</li></ul></div>
+      <div class="site rv d3"><div class="nm">ふるさとチョイス</div><div class="cnt"><b class="num">1,788</b>自治体</div><ul><li>取扱自治体数・返礼品数が業界最大級</li><li>マイナーな自治体や珍しい返礼品が多い</li><li>災害支援の寄付やガバメントクラウドファンディングに強い</li></ul></div>
+      <div class="site rv d3"><div class="nm">さとふる</div><div class="cnt"><b class="num">1,618</b>自治体</div><ul><li>独自の物流網で配送が早い</li><li>アプリで寄付から控除の手続きまで管理できる</li><li>ワンストップ特例をオンラインで申請しやすい</li></ul></div>
+      <div class="site rv d4"><div class="nm">ふるなび</div><div class="cnt"><b class="num">1,606</b>自治体</div><ul><li>家電・パソコンなど高額な返礼品が多い</li><li>「ふるなびカタログ」で寄付してから返礼品を選べる</li><li>体験型の返礼品を探しやすい</li></ul></div>
+      <div class="site rv d4"><div class="nm">Amazon<br>ふるさと納税</div><div class="cnt"><b class="num">1,000</b>自治体</div><ul><li>一部の返礼品は最短翌日に届く</li><li>Amazonのアカウントで寄付できる</li></ul></div>
+    </div>
+    <div class="src">掲載自治体数：BCN+R（2026年10月14日）。メリット：フルーツ歳時記「4大ポータル比較【2026年版】」、BCN+R。寄付へのポイント付与は全サイトで終了している</div>
+  </section>
+
+  <section class="scene" id="s-close">
+    <div>
+      <div class="kicker rv">締切</div>
+      <h2 class="rv d1" style="margin-top:10px"><span>12月31日</span>までに駆け込む</h2>
+    </div>
+    <div class="tl rv d2">
+      <div class="tlx"><div class="d">12月</div><div class="w">年収が確定する</div><div class="s">年末調整・源泉徴収票で年収がわかる。上限をもう一度計算して、残りの枠を出す</div></div>
+      <div class="tlx hot"><div class="d num">12/31</div><div class="w">寄付の締切</div><div class="s">この日までに支払いが済んだ寄付が2026年分</div></div>
+      <div class="tlx"><div class="d num">1/10</div><div class="w">ワンストップ特例の申請</div><div class="s">5自治体までの人。寄付先に必着</div></div>
+      <div class="tlx"><div class="d num">2/16–3/15</div><div class="w">確定申告</div><div class="s">6自治体以上の人、ワンストップ特例を使わない人</div></div>
+    </div>
+    <div class="src">確定申告期間は令和8年分（2027年2月16日〜3月15日）</div>
+  </section>
+
+  <section class="scene trailer" id="s-next">
+    <div class="speed"></div>
+    <div class="stack">
+      <div class="band">NEXT EPISODE</div>
+      <div class="yokoku">次回予告</div>
+    </div>
+  </section>
+
+  <section class="scene trailer" id="s-next2">
+    <div class="speed"></div>
+    <div class="stack">
+      <div class="band">節税シリーズ 第2弾</div>
+      <div class="mega pop">NISA<span>と</span>iDeCo</div>
+      <div class="sub pop p2">つみたてで、税金をかけずに増やす</div>
+    </div>
+  </section>
+
+  <section class="scene trailer" id="s-next3">
+    <div class="speed"></div>
+    <div class="stack">
+      <div class="band">2027年1月 スタート</div>
+      <div class="mega pop">こども<span>NISA</span></div>
+      <div class="facts4 pop p2">
+        <div><b>0〜17歳</b><span>対象</span></div>
+        <div><b class="num">年60万円</b><span>つみたて投資枠のみ</span></div>
+        <div><b class="num">600万円</b><span>非課税の総枠</span></div>
+        <div><b>12歳〜</b><span>条件を満たせば払い出せる</span></div>
+      </div>
+    </div>
+    <div class="src" style="color:#ffffff70">こどもNISA：野村證券「こどもNISA」</div>
+  </section>
+
+  <section class="scene trailer" id="s-next4">
+    <div class="speed"></div>
+    <div class="stack">
+      <div class="band">次回 節税シリーズ 第2弾</div>
+      <div class="mega pop" style="font-size:clamp(48px,8vw,136px)">401kで<span>固めて</span>、<br>NISAで<span>攻める</span></div>
+      <div class="catch pop p2" style="font-size:clamp(20px,2.6vw,40px);margin-top:10px">守りの401k × 攻めのNISA × 子どもはこどもNISA</div>
+      <div class="sub pop p3">老後と教育費、税金をかけずに準備する</div>
+      <div class="otanoshimi pop p4">お楽しみに！</div>
+    </div>
+  </section>
+</div>
+<div id="navzones" aria-hidden="true"><div data-dir="-1"></div><div data-dir="1" style="flex:2"></div></div>
+<div id="pageno" class="num"></div>
+
+<script>
+(async function(){
+const [M,IMG] = await Promise.all([
+  fetch('map.json').then(r=>r.json()),
+  fetch('images.json').then(r=>r.ok?r.json():{}).catch(()=>({}))
+]);
+const img=(k,alt)=>IMG[k]?`<img class="ph" src="${IMG[k]}" alt="${alt}">`:`<span class="ph"></span>`;
+const D = [[2026,"21205"],[2026,"21205"],[2026,"07204"],[2026,"07204"],[2026,"46535"],[2026,"39205"],[2026,"03211"],[2026,"01691"],[2026,"28224"],[2026,"01100"],[2026,"28585"],[2026,"27213"],
+[2025,"03202"],[2025,"22212"],[2025,"43202"],[2025,"18202"],[2025,"01691"],[2025,"27218"],[2025,"45203"],[2025,"03211"],
+[2024,"27213"],[2024,"01668"],[2024,"04205"],[2024,"04205"],[2024,"01665"],[2024,"01691"],[2024,"27213"],[2024,"03205"],
+[2022,"39307"],[2022,"40383"],[2022,"01219"],[2022,"01694"],[2021,"01229"],[2021,"01223"],[2021,"40383"],
+[2020,"39307"],[2020,"12234"],[2020,"01223"],[2020,"01223"],[2020,"01609"],[2020,"01219"],[2018,"39302"],[2018,"12223"],
+[2017,"39302"],[2017,"01668"],[2017,"43364"],[2017,"22212"],[2016,"39202"],[2016,"22212"],[2016,"45406"],[2016,"01347"]];
+
+const Z=[["z_meat","肉","飛騨ジビエ 熊鍋セット","岐阜県高山市","30,000円"],["z_fish","魚介","鯨肉 お刺身用 鯨赤身","大阪府大阪市","12,000円"],["z_veg","野菜","紫アスパラガス 約1.5kg","香川県高松市","15,000円"],["z_rice","米","幻の米「あや」精米10kg","北海道旭川市","10,000円"],
+ ["z_sake","酒","百年杉木桶仕込み 樽丸純米樽酒","奈良県吉野町","21,000円"],["z_gold","モノ","純金（K24）製 黄金将棋の駒【王将】","山梨県南アルプス市","11,740,000円",1],["z_exp","体験","イルカのトレーナー体験 1名","高知県室戸市","8,000円"],["z_svc","サービス","お墓参り代行サービス 1回","長野県原村","37,000円"]];
+document.getElementById('zcards').innerHTML=Z.map(([k,c,n,t,y,g],i)=>`<div class="card rv d${2+Math.floor(i/4)*2}${g?' gold':''}"><div class="img">${img(k,n)}</div><div class="cat">${c}</div><b>${n}</b><div class="meta"><span>${t}</span><em class="num">${y}</em></div></div>`).join('');
+const HC=[["h_tan","牛たん","厚切り牛タン 12mm","8,000円〜"],["h_ponzu","調味料","長寿味噌醤油 ぽん酢など4種","13,000円"],["h_nori","海苔","奥松島 焼きのり・味付けのり（皇室献上）","29,000円"],["h_kaki","牡蠣","奥松島産 むき身 1kg","14,000円"],["h_rice","米","ササニシキ（デンマーク王室献上米）","9,000円〜"],["h_blue","ブルーインパルス","縁細工 ブルーインパルス 3点セット","10,000円"]];
+document.getElementById('hcards').innerHTML=HC.map(([k,c,n,y],i)=>`<div class="card rv d${2+Math.floor(i/3)}"><div class="img">${img(k,n)}</div><div class="cat">${c}</div><b>${n}</b><div class="meta"><span></span><em class="num">${y}</em></div></div>`).join('');
+
+const RANKS = [
+ {p:5,code:"39202",town:"高知県室戸市",name:"初音の定期便お楽しみセット（12回）",yen:"120,000円",
+  pts:["毎月1回、12か月届く定期便","おひとり様向けの2人前","肉・魚・惣菜・刺身・加工品が冷凍で届く"],
+  alt:"2017年に寄付した高知県奈半利町の「お楽しみコース（年12回）」は掲載終了のため、今ある近い定期便に差し替え"},
+ {p:4,code:"34213",town:"広島県廿日市市",name:"桜尾・戸河内 ウイスキー2本セット（各700ml）",yen:"60,000円",
+  pts:["廿日市市桜尾の蒸留所、サクラオブルワリーアンドディスティラリーがつくるウイスキー","「桜尾」と「戸河内」の2本セット","決済から2週間程度で発送。常温で保存できる"],alt:""},
+ {p:3,code:"28585",town:"兵庫県香美町",name:"香住産 ほたるいか素干し（訳あり）",yen:"3,000円〜",
+  pts:["香美町の漁港で水揚げしたほたるいかを100%使用","食塩・添加物なし。ワタごと丸干し","トースターやライターで炙ると風味が増す"],alt:""},
+ {p:2,code:"27213",town:"大阪府泉佐野市",name:"ビッグフェイスタオル ヒオリエ",yen:"14,000円〜",
+  pts:["約40×100cm。バスタオルよりコンパクトで洗濯がラク","綿100%、泉佐野市で製造する泉州タオル","5枚・10枚から選べる"],alt:""},
+ {p:1,code:"01223",town:"北海道根室市",name:"[北海道根室産] いくら醤油漬・お刺身帆立貝柱セット",yen:"16,000円〜",
+  pts:["根室の藤井水産（創業1902年）","いくら醤油漬とお刺身用の帆立貝柱のセット","内容量を3種類から選べる"],alt:""}
+];
+
+const NS="http://www.w3.org/2000/svg", map=document.getElementById('map');
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e;};
+const gPref=document.getElementById('g-pref'),gMuni=document.getElementById('g-muni'),gPins=document.getElementById('g-pins');
+const prefEls={};for(const id in M.pref)prefEls[id]=el('path',{d:M.pref[id],class:'pref'},gPref);
+const muniEls={};for(const id in M.muni)muniEls[id]=el('path',{d:M.muni[id],class:'muni'+(id==="04214"?' home':'')},gMuni);
+const C=id=>M.mc[id];
+let vb=[0,0,870,780],camAnim=null;const FULL=[0,0,870,780];
+function setVB(v){vb=v;map.setAttribute('viewBox',v.map(n=>n.toFixed(2)).join(' '));scalePins();}
+function camTo(t,dur=1500){const f=vb.slice(),t0=performance.now();if(camAnim)cancelAnimationFrame(camAnim);
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){setVB(t);return;}
+  const st=now=>{const k=Math.min(1,(now-t0)/dur),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+    const w=f[2]+(t[2]-f[2])*e,h=f[3]+(t[3]-f[3])*e,cx=f[0]+f[2]/2+((t[0]+t[2]/2)-(f[0]+f[2]/2))*e,cy=f[1]+f[3]/2+((t[1]+t[3]/2)-(f[1]+f[3]/2))*e;
+    setVB([cx-w/2,cy-h/2,w,h]);if(k<1)camAnim=requestAnimationFrame(st);};camAnim=requestAnimationFrame(st);}
+function around(code,w,fx=.5,fy=.5){const c=C(code),h=w*innerHeight/innerWidth;return [c[0]-w*fx,c[1]-h*fy,w,h];}
+let pins=[];
+function scalePins(){const s=vb[2]/870;pins.forEach(p=>p.g.setAttribute('transform',`translate(${p.x} ${p.y}) scale(${s})`));}
+function clearPins(){pins.forEach(p=>p.g.remove());pins=[];}
+function addPin(code,{color='#e0362c',r=3.2,delay=0,pulse=false}={}){const c=C(code);if(!c)return;
+  const g=el('g',{},gPins),dot=el('circle',{r,fill:color,opacity:0},g);pins.push({g,x:c[0],y:c[1]});scalePins();
+  setTimeout(()=>{dot.animate([{opacity:0,transform:'scale(0)'},{opacity:1,transform:'scale(1.4)'},{opacity:1,transform:'scale(1)'}],{duration:500,fill:'forwards',easing:'ease-out'});
+    if(pulse){const ring=el('circle',{r:r*1.6,fill:'none',stroke:color,'stroke-width':1},g);ring.animate([{transform:'scale(.8)',opacity:.9},{transform:'scale(4)',opacity:0}],{duration:1800,iterations:Infinity});}},delay);}
+function litMuni(codes){for(const id in muniEls)muniEls[id].classList.toggle('on',codes.includes(id));}
+function litPref(p){for(const id in prefEls)prefEls[id].classList.toggle('lit',p.includes(id));}
+
+const host=document.getElementById('rankHost');const yen=n=>n.toLocaleString('ja-JP');
+RANKS.forEach(r=>{const s=document.createElement('section');s.className='scene rank'+(r.p===1?' first':'');s.id='s-rank'+r.p;
+  s.innerHTML=`<div class="left"><div class="place rv"><b class="num">${r.p}</b><span>位</span></div><div class="town rv d1">${r.town}</div><h3 class="rv d1">${r.name}</h3>
+  <div class="yen rv d2">寄付額 <b class="num">${r.yen}</b></div><ul class="points rv d3">${r.pts.map(p=>`<li>${p}</li>`).join('')}</ul>${r.alt?`<div class="alt rv d4">${r.alt}</div>`:''}</div>
+  <div class="photo">${img('r'+r.p,r.name)}</div>`;
+  host.parentNode.insertBefore(s,host);});
+host.remove();
+// order: ... rank1 → home → money → sites
+const r1=document.getElementById('s-rank1');r1.after(document.getElementById('s-home'));
+document.getElementById('s-home').after(document.getElementById('s-money'));
+
+function drawSankey(){const s=document.getElementById('sankey');s.innerHTML='';
+  const H=340,top=40,total=10000;
+  const tx=(x,y,t,o={})=>{const e=el('text',Object.assign({x,y,fill:'#14161a','font-size':14},o),s);e.textContent=t;return e;};
+  const band=(xa,ya,ha,xb,yb,hb,col,delay)=>{const m=(xa+xb)/2;const p=el('path',{d:`M${xa} ${ya} C ${m} ${ya}, ${m} ${yb}, ${xb} ${yb} L ${xb} ${yb+hb} C ${m} ${yb+hb}, ${m} ${ya+ha}, ${xa} ${ya+ha} Z`,fill:col,opacity:0},s);p.animate([{opacity:0},{opacity:.2}],{duration:700,delay,fill:'forwards'});};
+  // left: my money
+  const L=[["税金から差し引かれる","8,000円",8000,"#8a90a0"],["自己負担","2,000円",2000,"#e0362c"]];
+  const lx0=0,lx1=190,gapL=12,usableL=H-gapL;let ly=top,my=top;const mx0=380,mx1=440;
+  tx(lx0,top-14,'私が払う',{'font-size':13,'font-weight':900,fill:'#5b6170'});
+  L.forEach(([a,b,v,col],i)=>{const h=usableL*v/total;el('rect',{x:lx0,y:ly,width:lx1-lx0,height:h,fill:col,rx:8},s);
+    tx(lx0+14,ly+h/2-2,b,{fill:'#fff','font-size':i?20:28,'font-weight':900});tx(lx0+14,ly+h/2+(i?16:22),a,{fill:'#ffffffcc','font-size':12});
+    const hm=H*v/total;band(lx1,ly,h,mx0,my,hm,col,200+i*150);ly+=h+gapL;my+=hm;});
+  el('rect',{x:mx0,y:top,width:mx1-mx0,height:H,fill:'#14161a',rx:8},s);
+  tx(mx0+30,top-14,'寄付',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#5b6170'});
+  const t=tx(mx0+30,top+H/2,'10,000円',{'text-anchor':'middle',fill:'#fff','font-size':15,'font-weight':900,transform:`rotate(-90 ${mx0+30} ${top+H/2})`});
+  // right: where it goes
+  const parts=[["返礼品","→ 私に届く",2650,"#e0362c"],["送料・決済・広報","運送会社・カード会社など",780,"#f0a83a"],["サイトへの手数料","楽天などのポータルサイト",940,"#6f7686"],["その他の事務費","中間事業者への委託など",420,"#b7bcc6"],["自治体に残る","東松島市のまちづくり",5210,"#2b6de0"]];
+  const rx0=780,rx1=790,gap=12,usable=H-gap*(parts.length-1);let ys=top,yd=top;
+  tx(rx0,top-14,'お金のゆくえ',{'font-size':13,'font-weight':900,fill:'#5b6170'});
+  parts.forEach(([lab,who,v,col],i)=>{const hs=H*v/total,hd=usable*v/total;band(mx1,ys,hs,rx0,yd,hd,col,600+i*120);
+    el('rect',{x:rx0,y:yd,width:rx1-rx0,height:hd,fill:col,rx:2},s);const cy=yd+hd/2,big=hd>44;
+    tx(rx1+16,big?cy-3:cy+6,yen(v)+'円',{'font-size':big?30:19,'font-weight':900});
+    tx(big?rx1+16:rx1+112,big?cy+20:cy+6,lab+'｜'+who,{'font-size':14,fill:'#5b6170'});ys+=hs;yd+=hd+gap;});}
+
+const jets=document.getElementById('jets');
+function flyJets(){jets.innerHTML='';for(let i=0;i<6;i++){const y=i*12,d=`M420 ${660+y} C 600 ${480+y}, 780 ${260+y}, 1080 ${-40+y}`;
+  const p=el('path',{d,stroke:i%3===2?'#2b6de0':'#d3dbea','stroke-width':4,fill:'none','stroke-linecap':'round',pathLength:1000,'stroke-dasharray':1000,'stroke-dashoffset':1000},jets);
+  p.animate([{strokeDashoffset:1000},{strokeDashoffset:0}],{duration:2200,delay:i*100,fill:'forwards',easing:'cubic-bezier(.4,.1,.3,1)'});}}
+
+/* confetti */
+const cv=document.getElementById('confetti'),cx=cv.getContext('2d');let parts=[],cA=null;
+function confetti(){const dpr=devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
+  const cols=['#e0362c','#f0a83a','#2b6de0','#14161a','#f3c6c2'];
+  parts=Array.from({length:220},(_,i)=>({x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*.6,vx:(Math.random()-.5)*2,vy:2+Math.random()*3,w:6+Math.random()*6,h:3+Math.random()*4,a:Math.random()*6,va:(Math.random()-.5)*.25,c:cols[i%cols.length]}));
+  if(cA)cancelAnimationFrame(cA);const t0=performance.now();
+  const st=now=>{cx.clearRect(0,0,innerWidth,innerHeight);for(const p of parts){p.x+=p.vx+Math.sin((now+p.a*500)/400)*.6;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();}
+    if(now-t0<6000)cA=requestAnimationFrame(st);else cx.clearRect(0,0,innerWidth,innerHeight);};cA=requestAnimationFrame(st);}
+function stopConfetti(){if(cA)cancelAnimationFrame(cA);cx.clearRect(0,0,cv.width,cv.height);}
+
+const scenes=[...document.querySelectorAll('.scene')];
+const allTowns=[...new Set(D.map(d=>d[1]))];
+let tT=[];
+const H={
+ 's-title':{cam:FULL,enter(){clearPins();litMuni([]);tT.forEach(clearTimeout);tT=[];[2016,2017,2018,2020,2021,2022,2024,2025,2026].forEach((y,i)=>tT.push(setTimeout(()=>D.filter(d=>d[0]===y).forEach((d,j)=>addPin(d[1],{delay:j*50})),400+i*450)));}},
+ 's-system':{dim:1,cam:FULL,enter(){clearPins();litMuni([]);}},
+ 's-zukan':{dim:1,cam:FULL,enter(){clearPins();}},
+ 's-caution':{dim:1,cam:FULL,enter(){clearPins();}},
+ 's-cover':{cam:FULL,enter(){clearPins();litMuni([]);allTowns.forEach((c,i)=>addPin(c,{delay:i*25,r:2.6}));}},
+ 's-home':{cam:null,enter(){clearPins();litPref(['04']);litMuni(['04214']);camTo(around('04214',220,.22,.9),1500);setTimeout(()=>camTo(around('04214',90,.22,.9),1300),1600);addPin('04214',{color:'#2b6de0',r:3,pulse:true,delay:1400});flyJets();},leave(){litPref([]);jets.innerHTML='';}},
+ 's-money':{dim:1,cam:FULL,enter(){clearPins();litMuni([]);drawSankey();}},
+ 's-sites':{dim:1,cam:FULL,enter(){clearPins();}},
+ 's-close':{dim:1,cam:FULL,enter(){clearPins();}},
+ 's-next':{dark:1,cam:FULL,enter(){clearPins();litMuni([]);}},
+ 's-next2':{dark:1,cam:FULL,enter(){}},
+ 's-next3':{dark:1,cam:FULL,enter(){}},
+ 's-next4':{dark:1,cam:FULL,enter(){}}
+};
+RANKS.forEach(r=>{H['s-rank'+r.p]={cam:null,enter(){clearPins();litMuni([r.code]);camTo(around(r.code,r.code==='01223'?260:200,.42,.5),1500);addPin(r.code,{r:3.4,pulse:true,delay:900});if(r.p===1)window.__cf=setTimeout(confetti,500);},leave(){if(r.p===1){clearTimeout(window.__cf);stopConfetti();}}};});
+let cur=-1;const stage=document.getElementById('stage'),pg=document.getElementById('pageno');
+function go(i){i=Math.max(0,Math.min(scenes.length-1,i));if(i===cur)return;
+  if(cur>=0){scenes[cur].classList.remove('active');H[scenes[cur].id]?.leave?.();}
+  cur=i;const s=scenes[i];void s.offsetWidth;s.classList.add('active');const h=H[s.id]||{};
+  stage.classList.toggle('dim',!!h.dim);stage.classList.toggle('dark',!!h.dark);if(h.cam)camTo(h.cam);h.enter?.();
+  pg.textContent=String(i+1).padStart(2,'0')+' / '+scenes.length;pg.style.color=h.dark?'#ffffff60':'';}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(scenes.length-1);
+  else if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.().catch(()=>{});});
+document.querySelectorAll('#navzones div').forEach(z=>z.addEventListener('click',()=>go(cur+(+z.dataset.dir))));
+go(0);
+})();
+</script>
+</body></html>
